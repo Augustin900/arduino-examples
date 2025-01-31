@@ -1,0 +1,4 @@
+|--- TODO:
+|- Make the display stretch to full screen
+|- Add BG
+|- Clean up code

@@ -1,12 +1,6 @@
-#include <Wire.h>
 #include <LiquidCrystal.h>
 
-// Create an LCD object (update the address and dimensions for your LCD)
-LiquidCrystal lcd(8, 9, 4, 5, 6, 7); // select the pins used on the LCD panel
-
-// define collumns and rows
-const int cols = 16;
-const int rows = 2;
+LiquidCrystal lcd(8, 9, 4, 5, 6, 7); // Interfacing pins
 
 // Ball struct to hold the properties of each ball
 struct Ball {
@@ -18,6 +12,9 @@ struct Ball {
 // Define the number of balls
 const int numBalls = 3;
 Ball balls[numBalls];
+
+const int cols = 16;
+const int rows = 2;
 
 // Setup function
 void setup() {
@@ -31,7 +28,7 @@ void setup() {
     balls[i].y = random(0, rows);     // Random starting y-position
     balls[i].dx = random(0, 2) == 0 ? 1 : -1;  // Random x-direction
     balls[i].dy = random(0, 2) == 0 ? 1 : -1;  // Random y-direction
-    balls[i].symbol = 'o';                // Unique character for each ball
+    balls[i].symbol = 'O';
   }
 }
 
@@ -55,7 +52,7 @@ void loop() {
     }
     if (balls[i].y >= rows || balls[i].y < 0) {
       balls[i].dy = -balls[i].dy;  // Reverse y direction
-      balls[i].y = constrain(balls[i].y, 0, rows);
+      balls[i].y = constrain(balls[i].y, 0, rows - 1);
     }
 
     // Draw the ball in its new position

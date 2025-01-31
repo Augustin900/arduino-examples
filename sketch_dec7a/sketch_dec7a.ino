@@ -1,3 +1,4 @@
+#include <Adafruit_GFX.h>
 #include <RGBmatrixPanel.h>
 
 #define CLK 8
@@ -9,40 +10,86 @@
 
 RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
 
-int ball_x_1, ball_x_2, 
-int ball_x_3 = 15;
-int ball_x_4 = 15;
-int ball_x_5 = 15;
+const int red = matrix.Color333(7, 0, 0); // red
+const int black = matrix.Color333(0, 0, 0); // black
+const int white = matrix.Color333(7, 7, 7); // white
 
-int ball_y_1 = 7.5;
-int ball_y_2 = 7.5;
-int ball_y_3 = 7.5;
-int ball_y_4 = 7.5;
-int ball_y_5 = 7.5;
-
-const int red = matrix.Color333(7, 0, 0);    // red
-const int yellow = matrix.Color333(7, 7, 0); // yellow
-const int purple = matrix.Color333(7, 0, 7); // purple
-const int green = matrix.Color333(0, 7, 0);  // green
-const int blue = matrix.Color333(0, 0, 7);   // blue
+const int ball_size = 2;
 
 const int width = matrix.width();
 const int height = matrix.height();
 
-int x_mod_1, y_mod_1, x_mod_2, y_mod_2, x_mod_3, y_mod_3, x_mod_4, y_mod_4, x_mod_5, y_mod_5 = 1;
+int ball_x = width / 2;
+int ball_y = height / 2;
+
+int hue;
+
+long random_number(int range){
+  return random((0 - range), range);
+}
+
+int get_out_of_zero(int number){
+  int i = random_number(number);
+  while(i != 0){
+    i = random_number(number);
+  }
+  return i;
+}
+
+int x_mod = get_out_of_zero(1);
+int y_mod = get_out_of_zero(1);
+
+const int top_bound = 0;
+const int bottom_bound = height;
+const int left_bound = 0;
+const int right_bound = width;
+
+bool print_text = false;
 
 void setup(){
+  Serial.begin(9600);
+
+  // Initialize matrix...
   matrix.begin();
+
+  if(print_text){
+    // Print text
+    Serial.println("|--- Bouncing Balls Debug Console ---|");
+  }
+}
+
+void print_to_serial(){
+  // Prints data to serial monitor
+  Serial.print("|- Ball X: ");
+  Serial.print(ball_x);
+  Serial.print(", Y: ");
+  Serial.println(ball_y);
 }
 
 void loop(){
-  ball_x_1 += x_mod;
-  if(ball_x_1 > width || ball_x_1 < 0){
-    x_mod -= x_mod * 2;
-  }
-  ball_y_1 += y_mod;
-  if(ball_y_1 > height || ball_y_1 < 0){
-    y_mod -= y_mod * 2;
+  matrix.fillScreen(black);
+
+  // Moves the ball on the X axis
+  ball_x + x_mod;
+  if(ball_x > right_bound || ball_x < left_bound){
+    x_mod - x_mod * 2;
   }
 
+  // Moves the ball on the Y axis
+  ball_y + y_mod;
+  if(ball_y > bottom_bound || ball_y < top_bound){
+    y_mod - y_mod * 2;
+  }
+
+  // Draws ball using fillCircle
+  matrix.fillCircle(ball_x, ball_y, ball_size, matrix.ColorHSV(hue, 255, 255, false));
+
+  if(print_text){
+    print_to_serial();
+  }
+
+  // Change hue
+  if(hue > 1536) hue = 0; else hue += 7;
+
+  delay(25);
 }
